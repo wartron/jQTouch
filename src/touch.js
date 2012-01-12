@@ -29,16 +29,18 @@
   $(document).ready(function(){
     $(document.body).bind('touchstart', function(e){
       var now = Date.now(), delta = now - (touch.last || now);
-      touch.el = $(parentIfText(e.touches[0].target));
+      var event = e.touches? e.touches[0]: e.originalEvent.touches[0];
+      touch.el = $(parentIfText(event.target));
       touchTimeout && clearTimeout(touchTimeout);
-      touch.x1 = e.touches[0].pageX;
-      touch.y1 = e.touches[0].pageY;
+      touch.x1 = event.pageX;
+      touch.y1 = event.pageY;
       if (delta > 0 && delta <= 250) touch.isDoubleTap = true;
       touch.last = now;
       setTimeout(longTap, longTapDelay);
     }).bind('touchmove', function(e){
-      touch.x2 = e.touches[0].pageX;
-      touch.y2 = e.touches[0].pageY;
+      var event = e.changeTouches[0];
+      touch.x2 = event.pageX;
+      touch.y2 = event.pageY;
     }).bind('touchend', function(e){
       if (touch.isDoubleTap) {
         touch.el.trigger('doubleTap');
