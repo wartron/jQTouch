@@ -21,9 +21,9 @@
 */
 (function() {
 
-    jQTouchCore = function(options) {
+    $.jQTouch = function(options) {
         // Initialize internal jQT variables
-        var $ = options.framework,
+        var $ = fx(),
             $body,
             $head=$('head'),
             history=[],
@@ -34,7 +34,7 @@
             touchSelectors=[],
             publicObj={},
             tapBuffer=100, // High click delay = ~350, quickest animation (slide) = 250
-            extensions=jQTouchCore.prototype.extensions,
+            extensions=$.jQTouch.prototype.extensions,
             animations=[],
             hairExtensions='',
             defaults = {
@@ -73,6 +73,21 @@
                     {name:'slideleft', selector:'.slideleft, .slide, #jqt > * > ul li a'}
                 ]
             }; // end defaults
+
+        function fx() {
+            var fx;
+            if (!!window.Zepto) {
+                fx = window.Zepto;
+                fx.fn.prop = fx.fn.attr;
+            } else if (!!window.jQuery) {
+                fx = window.jQuery;
+                // trick to get Zepto/touch.js to work for jQuery
+                //window.Zepto = $;
+            } else {
+                throw('Either Zepto or jQuery is required but neither can be found.');
+            }
+            return fx;
+        }
 
         function warn(message) {
             if (window.console !== undefined && jQTSettings.debug === true) {
@@ -752,25 +767,10 @@
         return publicObj;
     };
     
-    jQTouchCore.prototype.extensions = [];
+    $.jQTouch.prototype.extensions = [];
 
-    // If Zepto exists, jQTouch will use Zepto. Otherwise, a bridge should initialize
-    // jQTouch. See jqtouch-jquery.js.
-    (function($) {
-        $.jQTouch = function(options) {
-            options.framework = $;
-            return jQTouchCore(options);
-        };
-
-        if (window.Zepto) {
-            $.fn.prop = $.fn.attr;
-        } else {
-            window.Zepto = $;
-        }
-        
-        // Extensions directly manipulate the jQTouch object, before it's initialized.
-        $.jQTouch.addExtension = function(extension) {
-            jQTouchCore.prototype.extensions.push(extension);
-        };
-    })($);
+    // Extensions directly manipulate the jQTouch object, before it's initialized.
+    $.jQTouch.addExtension = function(extension) {
+        $.jQTouch.prototype.extensions.push(extension);
+    };
 })(); // Double closure, ALL THE WAY ACROSS THE SKY
