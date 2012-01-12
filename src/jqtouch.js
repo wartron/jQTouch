@@ -96,7 +96,6 @@
         // Unfortunately, we can not assume the "tap" event
         // is being used for links, forms, etc.
         function clickHandler(e) {
-
             // Figure out whether to prevent default
             var $el = $(e.target);
 
@@ -106,7 +105,7 @@
             }
 
             // Prevent default if we found an internal link (relative or absolute)
-            if ($el && $el.attr('href') && !$el.isExternalLink()) {
+            if ($el && $el.prop('href') && !$el.isExternalLink()) {
                 warn('Need to prevent default click behavior');
                 e.preventDefault();
             } else {
@@ -546,7 +545,7 @@
             }
 
             // Make sure we have a tappable element
-            if ($el.length && $el.attr('href')) {
+            if ($el.length && $el.prop('href')) {
                 $el.addClass('active');
             }
 
@@ -571,7 +570,7 @@
             }
 
             // Make sure we have a tappable element
-            if (!$el.length || !$el.attr('href')) {
+            if (!$el.length || !$el.prop('href')) {
                 warn('Could not find a link related to tapped element');
                 return false;
             }
@@ -579,7 +578,7 @@
             // Init some vars
             var target = $el.attr('target'),
                 hash = $el.prop('hash'),
-                href = $el.attr('href'),
+                href = $el.prop('href'),
                 animation = null;
 
             if ($el.isExternalLink()) {
@@ -614,7 +613,7 @@
                 } else {
                     // External href
                     $el.addClass('loading active');
-                    showPageByHref($el.attr('href'), {
+                    showPageByHref($el.prop('href'), {
                         animation: animation,
                         callback: function() {
                             $el.removeClass('loading');
@@ -757,19 +756,21 @@
 
     // If Zepto exists, jQTouch will use Zepto. Otherwise, a bridge should initialize
     // jQTouch. See jqtouch-jquery.js.
-    if (!!window.Zepto) {
-        (function($) {
-            $.jQTouch = function(options) {
-                options.framework = $;
-                return jQTouchCore(options);
-            };
+    (function($) {
+        $.jQTouch = function(options) {
+            options.framework = $;
+            return jQTouchCore(options);
+        };
 
+        if (window.Zepto) {
             $.fn.prop = $.fn.attr;
-            
-            // Extensions directly manipulate the jQTouch object, before it's initialized.
-            $.jQTouch.addExtension = function(extension) {
-                jQTouchCore.prototype.extensions.push(extension);
-            };
-        })(Zepto);
-    }
+        } else {
+            window.Zepto = $;
+        }
+        
+        // Extensions directly manipulate the jQTouch object, before it's initialized.
+        $.jQTouch.addExtension = function(extension) {
+            jQTouchCore.prototype.extensions.push(extension);
+        };
+    })($);
 })(); // Double closure, ALL THE WAY ACROSS THE SKY
