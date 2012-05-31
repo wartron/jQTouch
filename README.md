@@ -1,3 +1,7 @@
+My Changes include a branch for android, attemping to fix various bugs, mainly with 
+android poor 3d support. 
+
+
 jQTouch
 =======
 
