@@ -640,6 +640,13 @@
             $.support.transform3d = supportForTransform3d();
 
             $.support.ios5 = /OS (5(_\d+)*) like Mac OS X/i.test(window.navigator.userAgent);
+            
+            $.support.android2 = /Android (2(_\d+)*)/i.test(window.navigator.userAgent);
+            if($.support.android2){ 
+                $.support.animationEvents = false;
+                $.support.transform3d = false;
+            }
+
 
             if (!$.support.touch) {
                 warn('This device does not support touch interaction, or it has been deactivated by the developer. Some features might be unavailable.');
